@@ -6,4 +6,7 @@ In this project, we study the hidden Markov random field (HMRF) model and its ex
 
 Document: https://arxiv.org/pdf/1207.3510.pdf
 
+This library is also available at:
+* https://www.mathworks.com/matlabcentral/fileexchange/37530-hmrf-em-image
+
 ![pic](resources/HMRF_EM.png)
