@@ -4,8 +4,22 @@
 [![arxiv](https://img.shields.io/badge/PDF-arXiv-yellow.svg)](https://arxiv.org/pdf/1207.3510.pdf)
 [![Octave application](https://github.com/wq2012/HMRF-EM-image/actions/workflows/octave.yml/badge.svg)](https://github.com/wq2012/HMRF-EM-image/actions/workflows/octave.yml)
 
-## Overview
+## Table of Contents
 
+- [Overview](#overview)
+- [Key Features](#key-features)
+- [Getting Started](#getting-started)
+  - [Prerequisites](#prerequisites)
+  - [Installation](#installation)
+- [Usage Example](#usage-example)
+- [Algorithm Explanation](#algorithm-explanation)
+- [Function Reference](#function-reference)
+- [Unit Tests](#unit-tests)
+- [Citations](#citations)
+
+---
+
+## Overview
 `HMRF-EM-image` is a MATLAB/Octave toolbox for 2D image segmentation using the **Hidden Markov Random Field (HMRF)** model and its **Expectation-Maximization (EM)** algorithm. This framework is particularly effective for segmenting images corrupted by noise or with spatial dependencies between pixels.
 
 This toolbox also implements **edge-prior-preserving** image segmentation, which uses the edge information (e.g., from a Canny edge detector) to constrain the spatial context, preventing over-smoothing across boundaries.
@@ -19,6 +33,7 @@ This toolbox also implements **edge-prior-preserving** image segmentation, which
 - **MAP Estimation**: Uses Maximum A Posteriori estimation for label assignment.
 - **Edge-Prior Preservation**: Incorporates edge information to protect boundaries during segmentation.
 - **Octave Compatible**: Fully functional in both MATLAB and GNU Octave.
+- **Performance Optimized**: Core loops are vectorized for maximum execution speed.
 
 ---
 
@@ -53,7 +68,7 @@ pkg load statistics;
 
 ## Usage Example
 
-The following example (from `demo.m`) shows how to perform segmentation on a gray-scale image.
+The following example (from `demo.m`) shows how to perform segmentation on a grayscale image.
 
 ```matlab
 % Load image and convert to grayscale
@@ -68,15 +83,15 @@ Y = double(Y);
 Y = gaussianBlur(Y, 3);
 
 % Parameters
-k = 2; % Number of labels
-EM_iter = 10; % Max EM iterations
-MAP_iter = 10; % Max MAP iterations per EM step
+k = 2;              % Number of labels
+max_em_iters = 10;  % Max EM iterations
+max_map_iters = 10; % Max MAP iterations per EM step
 
 % Step 1: Initial segmentation using k-means
 [X, mu, sigma] = image_kmeans(Y, k);
 
 % Step 2: HMRF-EM algorithm
-[X_final, mu_final, sigma_final] = HMRF_EM(X, Y, Z, mu, sigma, k, EM_iter, MAP_iter);
+[X_final, mu_final, sigma_final] = HMRF_EM(X, Y, Z, mu, sigma, k, max_em_iters, max_map_iters);
 
 % Display or save result
 imshow(uint8(X_final * (255/k)));
@@ -101,6 +116,8 @@ In each EM iteration, the MAP estimation finds the label configuration $X$ that 
 
 ## Function Reference
 
+Detailed documentation is available within each function file (use `help <function_name>`).
+
 ### `HMRF_EM(X, Y, Z, mu, sigma, k, EM_iter, MAP_iter)`
 Performs the core EM algorithm.
 - **Inputs**:
@@ -114,7 +131,7 @@ Performs the core EM algorithm.
     - `mu`, `sigma`: Final estimated Gaussian parameters.
 
 ### `MRF_MAP(X, Y, Z, mu, sigma, k, MAP_iter, show_plot)`
-Performs Maximum A Posteriori estimation of labels.
+Performs Maximum A Posteriori estimation of labels using energy minimization.
 
 ### `image_kmeans(Y, k)`
 Provides an initial clustering using standard k-means for the EM algorithm.

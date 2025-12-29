@@ -1,79 +1,90 @@
-%%  The MAP algorithm
-%---input---------------------------------------------------------
-%   X: initial 2D labels
-%   Y: image
-%   Z: 2D constraints
-%   mu: vector of means
-%   sigma: vector of standard deviations
-%   k: number of labels
-%   MAP_iter: maximum number of iterations of the MAP algorithm
-%   show_plot: 1 for showing a plot of energy in each iteration
-%       and 0 for not showing
-%---output--------------------------------------------------------
-%   X: final 2D labels
-%   sum_U: final energy
+function [X, sum_U] = MRF_MAP(X, Y, Z, mu, sigma, k, MAP_iter, show_plot)
+%MRF_MAP Maximum A Posteriori (MAP) estimation for Markov Random Field.
+%   [X, SUM_U] = MRF_MAP(X, Y, Z, MU, SIGMA, K, MAX_ITER, SHOW_PLOT) updates
+%   the label image X using MAP estimation given the observed image Y and
+%   current Gaussian parameters MU and SIGMA.
+%
+%   Input:
+%     X         - Initial 2D label image
+%     Y         - Input 2D image (double)
+%     Z         - 2D edge constraint map (0: no edge, 1: edge)
+%     mu        - Vector of cluster means
+%     sigma     - Vector of cluster standard deviations
+%     k         - Number of clusters
+%     MAP_iter  - Maximum number of MAP iterations
+%     show_plot - 1 to plot energy, 0 otherwise
+%
+%   Output:
+%     X         - Updated 2D label image
+%     sum_U     - Final total energy
+%
+%   See also: HMRF_EM
 
-%   Copyright by Quan Wang, 2012/04/25
-%   Please cite: Quan Wang. HMRF-EM-image: Implementation of the 
-%   Hidden Markov Random Field Model and its Expectation-Maximization 
-%   Algorithm. arXiv:1207.3510 [cs.CV], 2012.
+% Copyright (C) 2012 Quan Wang <wangq10@rpi.edu>
 
-function [X sum_U]=MRF_MAP(X,Y,Z,mu,sigma,k,MAP_iter,show_plot)
+[m, n] = size(Y);
+y = Y(:);
+U = zeros(m * n, k); % Accumulating energy matrix
+sum_U_MAP = zeros(1, MAP_iter);
 
-[m n]=size(Y);
-x=X(:);
-y=Y(:);
-U=zeros(m*n,k);
-sum_U_MAP=zeros(1,MAP_iter);
-for it=1:MAP_iter % iterations
-    fprintf('  Inner iteration: %d\n',it);
-    U1=U;
-    U2=U;
+% Pre-calculate likelihood term to avoid redundant computation inside iterations
+% Note: The original code added this term in EVERY iteration to the accumulating U
+L = zeros(m * n, k);
+for l = 1:k
+    yi = y - mu(l);
+    L(:, l) = (yi.^2) / (2 * sigma(l)^2) + log(sigma(l));
+end
+
+for it = 1:MAP_iter
+    fprintf('  Inner iteration: %d\n', it);
     
-    for l=1:k % all labels
-        yi=y-mu(l);
-        temp1=yi.*yi/sigma(l)^2/2;
-        temp1=temp1+log(sigma(l));
-        U1(:,l)=U1(:,l)+temp1;
+    % U1 inherits previous total energy and adds current likelihood
+    % This matches original: U1 = U; U1(:,l) = U1(:,l) + temp1;
+    U1 = U + L;
+    
+    % Prior energy (U2) is always recalculated from current labels
+    % This matches original: U2 = U; U2(ind,l) = u2; (U2 is fully overwritten)
+    U2 = zeros(m * n, k);
+    no_edge = (Z == 0);
+    for l = 1:k
+        X_diff = (X ~= l) / 2;
         
+        u2 = zeros(m, n);
+        % Neighboring penalties (Top, Bottom, Left, Right)
+        u2(2:end, :) = u2(2:end, :) + X_diff(1:end-1, :) .* no_edge(1:end-1, :);
+        u2(1:end-1, :) = u2(1:end-1, :) + X_diff(2:end, :) .* no_edge(2:end, :);
+        u2(:, 2:end) = u2(:, 2:end) + X_diff(:, 1:end-1) .* no_edge(:, 1:end-1);
+        u2(:, 1:end-1) = u2(:, 1:end-1) + X_diff(:, 2:end) .* no_edge(:, 2:end);
         
-        for ind=1:m*n % all pixels
-            [i j]=ind2ij(ind,m);
-            u2=0;
-            if i-1>=1 && Z(i-1,j)==0
-                u2=u2+(l ~= X(i-1,j))/2;
-            end
-            if i+1<=m && Z(i+1,j)==0
-                u2=u2+(l ~= X(i+1,j))/2;
-            end
-            if j-1>=1 && Z(i,j-1)==0
-                u2=u2+(l ~= X(i,j-1))/2;
-            end
-            if j+1<=n && Z(i,j+1)==0
-                u2=u2+(l ~= X(i,j+1))/2;
-            end
-            U2(ind,l)=u2;
-        end
+        U2(:, l) = u2(:);
     end
-    U=U1+U2;
-    [temp x]=min(U,[],2);
-    sum_U_MAP(it)=sum(temp(:));
     
-    X=reshape(x,[m n]);
-    if it>=3 && std(sum_U_MAP(it-2:it))/sum_U_MAP(it)<0.0001
+    % Update total state U
+    U = U1 + U2;
+    
+    % MAP label assignment (minimizing energy)
+    [temp, x] = min(U, [], 2);
+    sum_U_MAP(it) = sum(temp(:));
+    X = reshape(x, [m, n]);
+    
+    % Convergence check
+    if it >= 3 && std(sum_U_MAP(it-2:it)) / sum_U_MAP(it) < 0.0001
         break;
     end
 end
 
-sum_U=0;
-for ind=1:m*n % all pixels
-    sum_U=sum_U+U(ind,x(ind));
+% The final energy is calculated from the final labels using the last state of U
+sum_U = 0;
+for ind = 1:m*n
+    sum_U = sum_U + U(ind, x(ind));
 end
-if show_plot==1
+
+if show_plot == 1
     figure;
-    plot(1:it,sum_U_MAP(1:it),'r');
-    title('sum U MAP');
-    xlabel('MAP iteration');
-    ylabel('sum U MAP');
+    plot(1:it, sum_U_MAP(1:it), 'r', 'LineWidth', 2);
+    title('Convergence of MAP Energy');
+    xlabel('Iteration');
+    ylabel('Total Energy (U)');
+    grid on;
     drawnow;
 end
