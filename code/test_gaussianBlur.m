@@ -1,6 +1,18 @@
 function test_gaussianBlur
+%TEST_GAUSSIANBLUR Unit test for the gaussianBlur function.
+%   Verifies that the Gaussian blur function produces output of the correct
+%   size and effectively blurs an impulse signal.
+
+%   Copyright (C) 2012 Quan Wang <wangq10@rpi.edu>
+%
+%   Please cite: Quan Wang. HMRF-EM-image: Implementation of the 
+%   Hidden Markov Random Field Model and its Expectation-Maximization 
+%   Algorithm. arXiv:1207.3510 [cs.CV], 2012.
+
   printf('Testing gaussianBlur...\n');
-  pkg load image;
+  if is_octave
+    pkg load image;
+  end
   
   % Test 1: Identity for very small sigma (effectively)
   I = rand(10, 10);

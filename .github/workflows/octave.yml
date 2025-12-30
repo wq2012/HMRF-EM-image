@@ -22,8 +22,8 @@ jobs:
     - name: Run tests
       run: |
         cd code
-        octave --no-gui --eval "pkg load image; pkg load statistics; run_all_tests()"
+        octave --no-gui run_all_tests.m
     - name: Run demo
       run: |
         cd code
-        octave --no-gui --eval "pkg load image; pkg load statistics; demo()"
+        octave --no-gui demo.m

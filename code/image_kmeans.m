@@ -1,12 +1,28 @@
 function [X, mu, sigma] = image_kmeans(Y, k)
 %IMAGE_KMEANS Initial clustering for image segmentation using k-means.
 %   [X, MU, SIGMA] = IMAGE_KMEANS(Y, K) segments the 2D image Y into K
-%   clusters and returns the label image X, and the estimated cluster 
+%   clusters and returns the label image X, and the estimated cluster
 %   parameters.
 %
 %   Input:
 %     Y     - Input 2D image
 %     k     - Number of clusters
+%
+%   Output:
+%     X     - Label image (same size as Y)
+%     mu    - Vector of cluster means
+%     sigma - Vector of cluster standard deviations
+%
+%   Example:
+%     [X, mu, sigma] = image_kmeans(Y, 3);
+%
+%   See also: KMEANS
+
+%   Copyright (C) 2012 Quan Wang <wangq10@rpi.edu>
+%
+%   Please cite: Quan Wang. HMRF-EM-image: Implementation of the 
+%   Hidden Markov Random Field Model and its Expectation-Maximization 
+%   Algorithm. arXiv:1207.3510 [cs.CV], 2012.
 %
 %   Output:
 %     X     - Label image (same size as Y)

@@ -2,12 +2,20 @@
 % This script demonstrates the usage of the HMRF-EM-image toolbox for
 % 2D image segmentation with edge-prior preservation.
 %
-% Copyright (C) 2012 Quan Wang <wangq10@rpi.edu>
+%   Copyright (C) 2012 Quan Wang <wangq10@rpi.edu>
+%
+%   Please cite: Quan Wang. HMRF-EM-image: Implementation of the 
+%   Hidden Markov Random Field Model and its Expectation-Maximization 
+%   Algorithm. arXiv:1207.3510 [cs.CV], 2012.
 
 clear; clc; close all;
 
 % --- Setup ---
 fprintf('Setting up...\n');
+if is_octave
+    pkg load image;
+    pkg load statistics;
+end
 % Compile MEX files if they don't exist
 if exist('BoundMirrorExpand', 'file') ~= 3
     mex BoundMirrorExpand.cpp;

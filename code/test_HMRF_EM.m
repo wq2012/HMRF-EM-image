@@ -1,4 +1,14 @@
 function test_HMRF_EM
+%TEST_HMRF_EM Unit test for the HMRF_EM function.
+%   Verifies that the EM algorithm converges and produces reasonable parameters
+%   for a synthetic test case.
+
+%   Copyright (C) 2012 Quan Wang <wangq10@rpi.edu>
+%
+%   Please cite: Quan Wang. HMRF-EM-image: Implementation of the 
+%   Hidden Markov Random Field Model and its Expectation-Maximization 
+%   Algorithm. arXiv:1207.3510 [cs.CV], 2012.
+
   printf('Testing HMRF_EM...\n');
   
   % Create a small test case

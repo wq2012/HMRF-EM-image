@@ -1,4 +1,14 @@
 function test_ind2ij
+%TEST_IND2IJ Unit test for the ind2ij function.
+%   Verifies correct conversion of linear indices to 2D coordinates for
+%   various image sizes and indices.
+
+%   Copyright (C) 2012 Quan Wang <wangq10@rpi.edu>
+%
+%   Please cite: Quan Wang. HMRF-EM-image: Implementation of the 
+%   Hidden Markov Random Field Model and its Expectation-Maximization 
+%   Algorithm. arXiv:1207.3510 [cs.CV], 2012.
+
   printf('Testing ind2ij...\n');
   
   % Test 1: 1x1 image

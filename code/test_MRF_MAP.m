@@ -1,4 +1,14 @@
 function test_MRF_MAP
+%TEST_MRF_MAP Unit test for the MRF_MAP function.
+%   Verifies that the MAP estimation produces labels within the valid range
+%   and that the energy minimization output is consistent.
+
+%   Copyright (C) 2012 Quan Wang <wangq10@rpi.edu>
+%
+%   Please cite: Quan Wang. HMRF-EM-image: Implementation of the 
+%   Hidden Markov Random Field Model and its Expectation-Maximization 
+%   Algorithm. arXiv:1207.3510 [cs.CV], 2012.
+
   printf('Testing MRF_MAP...\n');
   
   % Create a small test case

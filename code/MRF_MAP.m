@@ -20,7 +20,11 @@ function [X, sum_U] = MRF_MAP(X, Y, Z, mu, sigma, k, MAP_iter, show_plot)
 %
 %   See also: HMRF_EM
 
-% Copyright (C) 2012 Quan Wang <wangq10@rpi.edu>
+%   Copyright (C) 2012 Quan Wang <wangq10@rpi.edu>
+%
+%   Please cite: Quan Wang. HMRF-EM-image: Implementation of the 
+%   Hidden Markov Random Field Model and its Expectation-Maximization 
+%   Algorithm. arXiv:1207.3510 [cs.CV], 2012.
 
 [m, n] = size(Y);
 y = Y(:);

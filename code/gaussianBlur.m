@@ -16,7 +16,11 @@ function GI = gaussianBlur(I, s)
 %
 %   See also: FSPECIAL, IMFILTER
 
-% Copyright (C) 2012 Quan Wang <wangq10@rpi.edu>
+%   Copyright (C) 2012 Quan Wang <wangq10@rpi.edu>
+%
+%   Please cite: Quan Wang. HMRF-EM-image: Implementation of the 
+%   Hidden Markov Random Field Model and its Expectation-Maximization 
+%   Algorithm. arXiv:1207.3510 [cs.CV], 2012.
 
 % Kernel size usually 3*sigma on each side
 h_size = ceil(s) * 3 + 1;
